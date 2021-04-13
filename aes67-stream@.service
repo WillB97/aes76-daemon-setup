@@ -1,0 +1,17 @@
+[Unit]
+Description=Route audio between AES67 and other audio devices
+Requires=aes67-daemon.service
+After=sound.target network.target aes67-daemon.service
+PartOf=aes67-daemon.service
+
+[Service]
+Type=simple
+Nice=-10
+User=nobody
+ExecStartPre=sleep 2
+ExecStart=/usr/bin/alsaloop -t 2500 -r 48000 -f S32_LE -g /opt/aes67/config/streams/%i
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

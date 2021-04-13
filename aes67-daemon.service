@@ -1,0 +1,14 @@
+[Unit]
+Description=The daemon for AES67 audio
+After=network.target
+
+[Service]
+Type=exec
+User=nobody
+WorkingDirectory=/opt/aes67/aes67-linux-daemon/daemon
+ExecStart=/opt/aes67/aes67-linux-daemon/daemon/aes67-daemon -c /opt/aes67/config/daemon.conf
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

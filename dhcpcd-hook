@@ -1,0 +1,10 @@
+# Restart AES67 daemon now that we have re-established connection
+
+case "$reason" in
+BOUND|RENEW|REBIND|REBOOT|INFORM)
+    if $if_up; then
+        # Reload the daemon to properly re-establish the streams,
+        # this will auomatically restart all the aes67-stream services
+        systemctl restart aes67-daemon
+    fi;;
+esac

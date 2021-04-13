@@ -1,0 +1,2 @@
+# Stereo stream from AES67 to headphones
+-c 2 -C plughw:RAVENNA -P plughw:1,0

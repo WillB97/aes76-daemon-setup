@@ -1,0 +1,2 @@
+# Loopback the AES sink to the source
+-c 2 -C plughw:RAVENNA -P plughw:RAVENNA
