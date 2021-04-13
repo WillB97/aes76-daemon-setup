@@ -53,4 +53,3 @@ sudo sed "s/User=.*/User=$USER/" aes67-stream@.service >/lib/systemd/system/aes6
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now aes67-daemon
-sudo systemctl enable --now aes67-stream@headphones
