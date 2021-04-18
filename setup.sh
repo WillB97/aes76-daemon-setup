@@ -2,6 +2,8 @@
 sudo apt update
 sudo apt install -y git
 
+script_base="$(realpath -s $(dirname $0))"
+
 sudo mkdir /opt/aes67
 sudo chown $USER:$USER /opt/aes67
 cd /opt/aes67
@@ -10,8 +12,8 @@ cd aes67-linux-daemon
 
 if grep 'ID=raspbian' /etc/os-release > /dev/null; then
     # starting w/ raspbian lite buster
-    $(dirname $0)/pi-packages.sh
-    $(dirname $0)/pi-optimise.sh
+    $script_base/pi-packages.sh
+    $script_base/pi-optimise.sh
 else
     ./ubuntu-packages.sh
 fi
@@ -23,7 +25,7 @@ fi
 # set "rtp_mcast_base" to "239.69.0.1" for connection to symetrix DSPs
 # set "tic_frame_size_at_1fs" to 192 to prevent audio glitches when using alsaloop to external audio devices
 mkdir /opt/aes67/config
-python -c '
+python3 -c '
 import sys, json
 print(json.dumps({
     **json.load(sys.stdin),
@@ -35,11 +37,11 @@ print(json.dumps({
 
 # install kernel module and set to auto-load
 cd 3rdparty/ravenna-alsa-lkm/driver
-sudo make module_install; sudo depmod -A
+sudo make modules_install; sudo depmod -A
 sudo modprobe MergingRavennaALSA
 echo MergingRavennaALSA | sudo tee -a /etc/modules
 
-cd "$(dirname $0)"
+cd "$script_base"
 
 # copy stream-configs to streams
 cp -r stream-configs/ /opt/aes67/config/streams/
@@ -48,8 +50,10 @@ cp -r stream-configs/ /opt/aes67/config/streams/
 sudo cp dhcpcd-hook /usr/lib/dhcpcd/dhcpcd-hooks/99-aes67.conf
 
 # copy systemd service files
-sudo sed "s/User=.*/User=$USER/" aes67-daemon.service >/lib/systemd/system/aes67-daemon.service
-sudo sed "s/User=.*/User=$USER/" aes67-stream@.service >/lib/systemd/system/aes67-stream@.service
+sed "s/User=.*/User=$USER/" aes67-daemon.service |
+    sudo tee /lib/systemd/system/aes67-daemon.service >/dev/null
+sudo sed "s/User=.*/User=$USER/" aes67-stream@.service |
+    sudo tee /lib/systemd/system/aes67-stream@.service >/dev/null
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now aes67-daemon
