@@ -17,12 +17,18 @@ dtoverlay=disable-wifi
 
 # skip waiting in bootloader
 boot_delay=0
+disable_splash=1
 EOF
 sudo systemctl disable hciuart
 sudo systemctl disable wpa_supplicant.service
+sudo systemctl disable triggerhappy
+sudo systemctl disable keyboard-setup.service
+sudo systemctl disable bluetooth.service
+sudo systemctl disable triggerhappy.socket
+sudo systemctl disable raspi-config.service
 
 # Reduce logging in startup
-sudo sed -ei 's/$/ quiet/' /boot/cmdline.txt
+sudo sed -ei 's/$/ quiet net.ifnames=0/' /boot/cmdline.txt
 
 # SD card write optimisations
 cat - | sudo tee -a /etc/fstab << EOF
